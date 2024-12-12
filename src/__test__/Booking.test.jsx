@@ -46,8 +46,20 @@ describe("BookingInfo Component", () => {
   describe("Booking Flow", () => {
     it("should show a generic error if any required field is not filled", async () => {
       server.use(
-        http.post("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com", (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ message: "Booking confirmed" }));
+        http.post("https://mock.api.example.com", (req, res, ctx) => {
+          const bookingData = req.body;
+
+          const confirmation = {
+            id: id,  
+            when: bookingData.when,
+            lanes: bookingData.lanes,
+            people: bookingData.people,
+            shoes: bookingData.shoes || [],
+            price: price,
+            active: true,
+          };
+
+          return res(ctx.status(200), ctx.json(confirmation));
         })
       );
 
@@ -92,8 +104,20 @@ describe("BookingInfo Component", () => {
 
     it("should show an error if the number of players exceeds the available lanes capacity", async () => {
       server.use(
-        http.post("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com", (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ message: "Booking confirmed" }));
+        http.post("https://mock.api.example.com", (req, res, ctx) => {
+          const bookingData = req.body;
+
+          const confirmation = {
+            id: id,  
+            when: bookingData.when,
+            lanes: bookingData.lanes,
+            people: bookingData.people,
+            shoes: bookingData.shoes || [],
+            price: price,
+            active: true,
+          };
+
+          return res(ctx.status(200), ctx.json(confirmation));
         })
       );
 
