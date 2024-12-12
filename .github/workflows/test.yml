@@ -27,9 +27,6 @@ jobs:
       - name: List coverage files for debugging
         run: ls -R ./coverage
 
-      - name: Generate coverage report
-        run: npm run coverage
-
       - name: Save coverage report
         uses: actions/upload-artifact@v3
         with:
@@ -51,6 +48,7 @@ jobs:
 
       - name: Check if coverage-summary.json exists
         run: |
+          echo "Listing coverage files for verification:"
           ls ./coverage
           if [ ! -f ./coverage/coverage-summary.json ]; then
             echo "Coverage report not found!"
