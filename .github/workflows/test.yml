@@ -51,15 +51,6 @@ jobs:
         with:
           name: coverage-report
 
-      # Verifica che il file `coverage-summary.json` esista
-      - name: Check if coverage-summary.json exists
-        run: |
-          if [ ! -f ./coverage/coverage-summary.json ]; then
-            echo "Error: Coverage report not found!"
-            exit 1
-          fi
-
-      # Controlla il livello di copertura
       - name: Check test coverage
         run: |
           COVERAGE=$(cat ./coverage/coverage-summary.json | jq .total.lines.pct)
