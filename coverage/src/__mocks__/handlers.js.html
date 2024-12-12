@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.68% </span>
+                <span class="strong">28.2% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/38</span>
+                <span class='fraction'>11/39</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.68% </span>
+                <span class="strong">28.2% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/38</span>
+                <span class='fraction'>11/39</span>
             </div>
         
             
@@ -101,10 +101,12 @@
 <a name='L36'></a><a href='#L36'>36</a>
 <a name='L37'></a><a href='#L37'>37</a>
 <a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -126,7 +128,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -142,31 +144,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { http, HttpResponse } from "msw";
 &nbsp;
 export const handlers = [
-  http.post("https://mock.api.example.com/book", async ({ request }) =&gt; {
+  
+  http.post("https://mock.api.example.com", async ({ request }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    const booking = await request.json();</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    if (!booking.when || !booking.time || !booking.people || !booking.lanes) {</span>
-<span class="cstat-no" title="statement not covered" >      return HttpResponse.error(400, "Missing required fields");</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const price = parseInt(booking.people) * 120 + parseInt(booking.lanes) * 100;</span>
+<span class="cstat-no" title="statement not covered" >    const price = </span>
+<span class="cstat-no" title="statement not covered" >      parseInt(booking.people || 0) * 120 + </span>
+<span class="cstat-no" title="statement not covered" >      parseInt(booking.lanes || 0) * 100;</span>
 <span class="cstat-no" title="statement not covered" >    const id = Math.random().toString(36).substring(2, 8).toUpperCase();</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    </span>
 <span class="cstat-no" title="statement not covered" >    const confirmation = {</span>
 <span class="cstat-no" title="statement not covered" >      id,</span>
 <span class="cstat-no" title="statement not covered" >      when: booking.when,</span>
-<span class="cstat-no" title="statement not covered" >      time: booking.time,</span>
 <span class="cstat-no" title="statement not covered" >      lanes: booking.lanes,</span>
 <span class="cstat-no" title="statement not covered" >      people: booking.people,</span>
-<span class="cstat-no" title="statement not covered" >      shoes: booking.shoes,</span>
+<span class="cstat-no" title="statement not covered" >      shoes: booking.shoes || [],</span>
 <span class="cstat-no" title="statement not covered" >      price,</span>
 <span class="cstat-no" title="statement not covered" >      active: true,</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >   </span>
 <span class="cstat-no" title="statement not covered" >    sessionStorage.setItem("confirmation", JSON.stringify(confirmation));</span>
 <span class="cstat-no" title="statement not covered" >    return HttpResponse.json(confirmation);</span>
   }),
 &nbsp;
+  
   http.get("https://mock.api.example.com/confirmation", () =&gt; {
 <span class="cstat-no" title="statement not covered" >    const storedConfirmation = sessionStorage.getItem("confirmation");</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -184,7 +187,7 @@ export const handlers = [
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-11T08:43:00.073Z
+                at 2024-12-12T12:48:32.394Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
