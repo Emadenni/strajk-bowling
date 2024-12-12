@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "npx vitest --coverage"
   },
   "dependencies": {
     "nanoid": "^4.0.2",

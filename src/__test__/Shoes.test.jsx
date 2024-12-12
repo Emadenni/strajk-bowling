@@ -7,6 +7,7 @@ import Booking from "../views/Booking";
 import { http } from "msw";
 
 describe("Shoes Component", () => {
+
   it("should allow the user to add a shoe and display the shoe size input field", () => {
     const addShoe = vi.fn();
     const shoes = [{ id: "1" }];
@@ -81,12 +82,11 @@ describe("Shoes Component", () => {
     expect(screen.getAllByText(/Shoe size \/ person/i).length).toBe(3);
 
     const shoeInputs = screen.getAllByLabelText(/Shoe size \/ person/i);
-    shoeInputs.forEach((input, index) => {
-      fireEvent.change(input, { target: { value: 38 + index * 2 } });
-    });
+    fireEvent.change(shoeInputs[0], { target: { value: "38" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
 
     fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { value: "1" } });
-
     fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2024-12-11" } });
     fireEvent.change(screen.getByLabelText(/Time/i), { target: { value: "18:00" } });
 
@@ -98,16 +98,15 @@ describe("Shoes Component", () => {
     await waitFor(() => {
       expect(screen.getAllByText(/Shoe size \/ person/i)).not.toHaveLength(0);
     });
-  });
+  }); 
 
   it("should show an error message if a shoe size is not filled", async () => {
-    
     server.use(
       http.post("https://mock.api.example.com", (req, res, ctx) => {
         const bookingData = req.body;
-  
+
         const confirmation = {
-          id: "mock-id",
+          id: id,
           when: bookingData.when,
           lanes: bookingData.lanes,
           people: bookingData.people,
@@ -115,44 +114,40 @@ describe("Shoes Component", () => {
           price: 600,
           active: true,
         };
-  
+
         return res(ctx.status(200), ctx.json(confirmation));
       })
     );
-  
+
     render(
       <MemoryRouter>
         <Booking />
       </MemoryRouter>
     );
-  
-   
+
     fireEvent.change(screen.getByLabelText(/Number of awesome bowlers/i), { target: { value: "3" } });
-  
+
     const shoeButton = screen.getByText("+");
-    fireEvent.click(shoeButton); 
-    fireEvent.click(shoeButton); 
-    fireEvent.click(shoeButton); 
-  
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+
     expect(screen.getAllByText(/Shoe size \/ person/i).length).toBe(3);
-  
-    
+
     const shoeInputs = screen.getAllByLabelText(/Shoe size \/ person/i);
     fireEvent.change(shoeInputs[0], { target: { value: "38" } });
     fireEvent.change(shoeInputs[1], { target: { value: "40" } });
-    
-  
+
     fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { value: "1" } });
     fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2024-12-11" } });
     fireEvent.change(screen.getByLabelText(/Time/i), { target: { value: "18:00" } });
-  
+
     const bookingButton = screen.getByRole("button", { name: /striiiiiike!/i });
     fireEvent.click(bookingButton);
-  
+
     await waitFor(() => {
       const errorMessage = screen.getByText(/Alla skor måste vara ifyllda/i);
       expect(errorMessage).toBeInTheDocument();
     });
   });
-  
 });
