@@ -150,4 +150,56 @@ describe("Shoes Component", () => {
       expect(errorMessage).toBeInTheDocument();
     });
   });
+
+  it("should show an error message if number of players doesn't match with chosen number of shoes", async () => {
+    server.use(
+      http.post("https://mock.api.example.com", (req, res, ctx) => {
+        const bookingData = req.body;
+
+        const confirmation = {
+          id: id,
+          when: bookingData.when,
+          lanes: bookingData.lanes,
+          people: bookingData.people,
+          shoes: bookingData.shoes || [],
+          price: 600,
+          active: true,
+        };
+
+        return res(ctx.status(200), ctx.json(confirmation));
+      })
+    );
+
+    render(
+      <MemoryRouter>
+        <Booking />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByLabelText(/Number of awesome bowlers/i), { target: { value: "4" } });
+
+    const shoeButton = screen.getByText("+");
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+
+    expect(screen.getAllByText(/Shoe size \/ person/i).length).toBe(3);
+
+    const shoeInputs = screen.getAllByLabelText(/Shoe size \/ person/i);
+    fireEvent.change(shoeInputs[0], { target: { value: "38" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
+
+    fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2024-12-11" } });
+    fireEvent.change(screen.getByLabelText(/Time/i), { target: { value: "18:00" } });
+
+    const bookingButton = screen.getByRole("button", { name: /striiiiiike!/i });
+    fireEvent.click(bookingButton);
+
+    await waitFor(() => {
+      const errorMessage = screen.getByText(/Antalet skor måste stämma överens med antal spelare/i);
+      expect(errorMessage).toBeInTheDocument();
+    });
+  });
 });
