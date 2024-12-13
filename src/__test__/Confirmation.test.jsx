@@ -131,4 +131,55 @@ describe("Confirmation process", () => {
     const expectedPrice = "460 sek";
     expect(priceText).toHaveTextContent(expectedPrice);
   });
+
+  it("should render all the input fields on the confirmation page", () => {
+    // Dati di esempio per il test
+    const confirmationDetails = {
+      when: "2024-12-11T18:00:00",
+      people: "3",
+      lanes: "1",
+      id: "123456",
+      price: "460",
+    };
+
+    // Mock del comportamento di sessionStorage
+    global.sessionStorage.getItem = vi.fn((key) =>
+      key === "confirmation" ? JSON.stringify(confirmationDetails) : null
+    );
+
+    // Render del componente
+    render(
+      <MemoryRouter>
+        <Confirmation />
+      </MemoryRouter>
+    );
+
+    // Verifica che tutti gli input siano visibili e abbiano i valori corretti
+    const whenInput = screen.getByLabelText(/When/i);
+    expect(whenInput).toBeInTheDocument();
+    expect(whenInput.value).toBe("2024-12-11 18:00:00");
+
+    const whoInput = screen.getByLabelText(/Who/i);
+    expect(whoInput).toBeInTheDocument();
+    expect(whoInput.value).toBe("3");
+
+    const lanesInput = screen.getByLabelText(/Lanes/i);
+    expect(lanesInput).toBeInTheDocument();
+    expect(lanesInput.value).toBe("1");
+
+    const bookingNumberInput = screen.getByLabelText(/Booking number/i);
+    expect(bookingNumberInput).toBeInTheDocument();
+    expect(bookingNumberInput.value).toBe("123456");
+
+    // Verifica prezzo totale
+    const priceElement = screen.getByText(/Total:/i);
+    expect(priceElement).toBeInTheDocument();
+    const priceValue = priceElement.nextElementSibling;
+    expect(priceValue).toHaveTextContent("460 sek");
+
+    // Verifica bottone
+    const button = screen.getByRole("button", { name: /Sweet, let's go!/i });
+    expect(button).toBeInTheDocument();
+  });
+
 });
