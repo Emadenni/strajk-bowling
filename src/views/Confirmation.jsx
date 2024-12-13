@@ -45,6 +45,7 @@ function Confirmation() {
             customClass="confirmation__input"
             defaultValue={confirmation.id}
             disabled="disabled"
+            name="bookingNumber" 
           />
           <article className="confirmation__price">
             <p>Total:</p>

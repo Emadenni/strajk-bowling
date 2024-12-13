@@ -2,9 +2,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import Shoes from "../components/Shoes/Shoes";
 import { MemoryRouter } from "react-router-dom";
-import { server } from "../__mocks__/server";
 import Booking from "../views/Booking";
-import { http } from "msw";
+import { spyOnBookingCall } from "../__mocks__/handlers";
+
 
 describe("Shoes Component", () => {
   it("should allow the user to add a shoe and fill the shoe size input field", () => {
@@ -66,24 +66,6 @@ describe("Shoes Component", () => {
   });
 
   it("should show an error message if a shoe size is not filled", async () => {
-    server.use(
-      http.post("https://mock.api.example.com", (req, res, ctx) => {
-        const bookingData = req.body;
-
-        const confirmation = {
-          id: id,
-          when: bookingData.when,
-          lanes: bookingData.lanes,
-          people: bookingData.people,
-          shoes: bookingData.shoes || [],
-          price: 600,
-          active: true,
-        };
-
-        return res(ctx.status(200), ctx.json(confirmation));
-      })
-    );
-
     render(
       <MemoryRouter>
         <Booking />
@@ -117,24 +99,6 @@ describe("Shoes Component", () => {
   });
 
   it("should show an error message if number of players doesn't match with chosen number of shoes", async () => {
-    server.use(
-      http.post("https://mock.api.example.com", (req, res, ctx) => {
-        const bookingData = req.body;
-
-        const confirmation = {
-          id: id,
-          when: bookingData.when,
-          lanes: bookingData.lanes,
-          people: bookingData.people,
-          shoes: bookingData.shoes || [],
-          price: 600,
-          active: true,
-        };
-
-        return res(ctx.status(200), ctx.json(confirmation));
-      })
-    );
-
     render(
       <MemoryRouter>
         <Booking />
@@ -165,6 +129,10 @@ describe("Shoes Component", () => {
     await waitFor(() => {
       const errorMessage = screen.getByText(/Antalet skor måste stämma överens med antal spelare/i);
       expect(errorMessage).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(spyOnBookingCall).not.toHaveBeenCalled();
     });
   });
 
@@ -203,7 +171,7 @@ describe("Shoes Component", () => {
     });
   });
 
-  it("should allow the user to add and remove shoe size inputs", async () => {
+  it("should allow the user to remove shoe size inputs", async () => {
     const addShoe = vi.fn();
     const updateSize = vi.fn();
     const removeShoe = vi.fn();
@@ -221,7 +189,7 @@ describe("Shoes Component", () => {
       expect(addShoe).toHaveBeenCalledTimes(3);
     });
 
-    // Rimuovi scarpe
+  
     fireEvent.click(screen.getAllByText("-")[0]);
 
     await waitFor(() => {

@@ -1,16 +1,16 @@
 import { http, HttpResponse } from "msw";
 
-export const handlers = [
-  
-  http.post("https://mock.api.example.com", async ({ request }) => {
-    const booking = await request.json();
+export const spyOnBookingCall = vi.fn();
 
-    const price = 
-      parseInt(booking.people || 0) * 120 + 
-      parseInt(booking.lanes || 0) * 100;
+export const handlers = [
+  http.post("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com", async ({ request }) => {
+    // Esegui la chiamata spy qui
+    const booking = await request.json();
+    spyOnBookingCall(); // Ora lo spy viene chiamato correttamente nell'handler
+
+    const price = parseInt(booking.people || 0) * 120 + parseInt(booking.lanes || 0) * 100;
     const id = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    
     const confirmation = {
       id,
       when: booking.when,
@@ -21,13 +21,11 @@ export const handlers = [
       active: true,
     };
 
-   
     sessionStorage.setItem("confirmation", JSON.stringify(confirmation));
     return HttpResponse.json(confirmation);
   }),
 
-  
-  http.get("https://mock.api.example.com/confirmation", () => {
+  http.get("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com/confirmation", () => {
     const storedConfirmation = sessionStorage.getItem("confirmation");
 
     if (!storedConfirmation) {
