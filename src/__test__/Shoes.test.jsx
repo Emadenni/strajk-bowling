@@ -7,8 +7,7 @@ import Booking from "../views/Booking";
 import { http } from "msw";
 
 describe("Shoes Component", () => {
-
-  it("should allow the user to add a shoe and display the shoe size input field", () => {
+  it("should allow the user to add a shoe and fill the shoe size input field", () => {
     const addShoe = vi.fn();
     const shoes = [{ id: "1" }];
 
@@ -47,58 +46,24 @@ describe("Shoes Component", () => {
     );
   });
 
-  it("should allow user to be able to choose the shoe size for each player", async () => {
-    server.use(
-      http.post("https://mock.api.example.com", (req, res, ctx) => {
-        const bookingData = req.body;
+  it("should allow user to choose the shoe size for each player", async () => {
+    const addShoe = vi.fn();
+    const updateSize = vi.fn();
+    const removeShoe = vi.fn();
 
-        const confirmation = {
-          id: id,
-          when: bookingData.when,
-          lanes: bookingData.lanes,
-          people: bookingData.people,
-          shoes: bookingData.shoes || [],
-          price: 600,
-          active: true,
-        };
+    const shoes = [{ id: "1" }, { id: "2" }, { id: "3" }];
 
-        return res(ctx.status(200), ctx.json(confirmation));
-      })
-    );
-
-    render(
-      <MemoryRouter>
-        <Booking />
-      </MemoryRouter>
-    );
-
-    fireEvent.change(screen.getByLabelText(/Number of awesome bowlers/i), { target: { value: "3" } });
+    render(<Shoes updateSize={updateSize} addShoe={addShoe} shoes={shoes} removeShoe={removeShoe} />);
 
     const shoeButton = screen.getByText("+");
     fireEvent.click(shoeButton);
     fireEvent.click(shoeButton);
     fireEvent.click(shoeButton);
 
-    expect(screen.getAllByText(/Shoe size \/ person/i).length).toBe(3);
-
-    const shoeInputs = screen.getAllByLabelText(/Shoe size \/ person/i);
-    fireEvent.change(shoeInputs[0], { target: { value: "38" } });
-    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
-    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
-
-    fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { value: "1" } });
-    fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2024-12-11" } });
-    fireEvent.change(screen.getByLabelText(/Time/i), { target: { value: "18:00" } });
-
-    const bookingButton = screen.getByRole("button", {
-      name: /striiiiiike!/i,
-    });
-    fireEvent.click(bookingButton);
-
     await waitFor(() => {
-      expect(screen.getAllByText(/Shoe size \/ person/i)).not.toHaveLength(0);
+      expect(addShoe).toHaveBeenCalledTimes(3);
     });
-  }); 
+  });
 
   it("should show an error message if a shoe size is not filled", async () => {
     server.use(
@@ -200,6 +165,67 @@ describe("Shoes Component", () => {
     await waitFor(() => {
       const errorMessage = screen.getByText(/Antalet skor måste stämma överens med antal spelare/i);
       expect(errorMessage).toBeInTheDocument();
+    });
+  });
+
+  it("should allow user to be see an overview where he can check shoes sizes before confirm booking", async () => {
+    render(
+      <MemoryRouter>
+        <Booking />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByLabelText(/Number of awesome bowlers/i), { target: { value: "3" } });
+
+    const shoeButton = screen.getByText("+");
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+
+    expect(screen.getAllByText(/Shoe size \/ person/i).length).toBe(3);
+
+    const shoeInputs = screen.getAllByLabelText(/Shoe size \/ person/i);
+    fireEvent.change(shoeInputs[0], { target: { value: "38" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
+    fireEvent.change(shoeInputs[1], { target: { value: "40" } });
+
+    fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2024-12-11" } });
+    fireEvent.change(screen.getByLabelText(/Time/i), { target: { value: "18:00" } });
+
+    const bookingButton = screen.getByRole("button", {
+      name: /striiiiiike!/i,
+    });
+    fireEvent.click(bookingButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/Shoe size \/ person/i)).not.toHaveLength(0);
+    });
+  });
+
+  it("should allow the user to add and remove shoe size inputs", async () => {
+    const addShoe = vi.fn();
+    const updateSize = vi.fn();
+    const removeShoe = vi.fn();
+
+    const shoes = [{ id: "1" }, { id: "2" }];
+
+    render(<Shoes updateSize={updateSize} addShoe={addShoe} shoes={shoes} removeShoe={removeShoe} />);
+
+    const shoeButton = screen.getByText("+");
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+    fireEvent.click(shoeButton);
+
+    await waitFor(() => {
+      expect(addShoe).toHaveBeenCalledTimes(3);
+    });
+
+    // Rimuovi scarpe
+    fireEvent.click(screen.getAllByText("-")[0]);
+
+    await waitFor(() => {
+      expect(screen.getAllByLabelText(/Shoe size \/ person/i)).toHaveLength(2);
     });
   });
 });
