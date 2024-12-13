@@ -4,7 +4,6 @@ import { MemoryRouter, BrowserRouter, Route, Routes } from "react-router-dom";
 import Booking from "../views/Booking";
 import Confirmation from "../views/Confirmation";
 import { spyOnBookingCall } from "../__mocks__/handlers";
-import { useNavigate } from "react-router-dom";
 
 beforeEach(() => {
   global.sessionStorage = {
@@ -83,6 +82,10 @@ describe("Confirmation process", () => {
     fireEvent.click(bookingButton);
 
     await waitFor(() => {
+      expect(spyOnBookingCall).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
       expect(global.sessionStorage.setItem).toHaveBeenCalledWith("confirmation", expect.stringContaining("id"));
     });
 
@@ -133,7 +136,7 @@ describe("Confirmation process", () => {
   });
 
   it("should render all the input fields on the confirmation page", () => {
-    // Dati di esempio per il test
+    
     const confirmationDetails = {
       when: "2024-12-11T18:00:00",
       people: "3",
@@ -142,19 +145,15 @@ describe("Confirmation process", () => {
       price: "460",
     };
 
-    // Mock del comportamento di sessionStorage
     global.sessionStorage.getItem = vi.fn((key) =>
       key === "confirmation" ? JSON.stringify(confirmationDetails) : null
     );
-
-    // Render del componente
     render(
       <MemoryRouter>
         <Confirmation />
       </MemoryRouter>
     );
 
-    // Verifica che tutti gli input siano visibili e abbiano i valori corretti
     const whenInput = screen.getByLabelText(/When/i);
     expect(whenInput).toBeInTheDocument();
     expect(whenInput.value).toBe("2024-12-11 18:00:00");
@@ -171,7 +170,6 @@ describe("Confirmation process", () => {
     expect(bookingNumberInput).toBeInTheDocument();
     expect(bookingNumberInput.value).toBe("123456");
 
-    // Verifica prezzo totale
     const priceElement = screen.getByText(/Total:/i);
     expect(priceElement).toBeInTheDocument();
     const priceValue = priceElement.nextElementSibling;
@@ -181,5 +179,4 @@ describe("Confirmation process", () => {
     const button = screen.getByRole("button", { name: /Sweet, let's go!/i });
     expect(button).toBeInTheDocument();
   });
-
 });
