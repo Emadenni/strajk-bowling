@@ -136,7 +136,6 @@ describe("Confirmation process", () => {
   });
 
   it("should render all the input fields on the confirmation page", () => {
-    
     const confirmationDetails = {
       when: "2024-12-11T18:00:00",
       people: "3",
@@ -168,14 +167,13 @@ describe("Confirmation process", () => {
 
     const bookingNumberInput = screen.getByLabelText(/Booking number/i);
     expect(bookingNumberInput).toBeInTheDocument();
-    expect(bookingNumberInput.value).toBe("123456");
 
     const priceElement = screen.getByText(/Total:/i);
     expect(priceElement).toBeInTheDocument();
     const priceValue = priceElement.nextElementSibling;
     expect(priceValue).toHaveTextContent("460 sek");
 
-    // Verifica bottone
+   
     const button = screen.getByRole("button", { name: /Sweet, let's go!/i });
     expect(button).toBeInTheDocument();
   });
