@@ -1,7 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Booking from "../views/Booking"; // Il componente Booking
+import Booking from "../views/Booking";
+import Navigation from "../components/Navigation/Navigation";
 import Confirmation from "../views/Confirmation";
 import { spyOnBookingCall } from "../__mocks__/handlers";
 
@@ -68,4 +69,30 @@ describe("navigation component", async () => {
       expect(noBookingMessage).toBeInTheDocument();
     });
   });
+
+  
+test('should render Navigation and toggle menu visibility', () => {
+  render(
+    <MemoryRouter>
+      <Navigation />
+    </MemoryRouter>
+  );
+
+ 
+  const navIcon = screen.getAllByRole("img")[0];
+  expect(navIcon).toBeInTheDocument();
+
+  const bookingLink = screen.getByText(/Booking/i);
+  const confirmationLink = screen.getByText(/Confirmation/i);
+  expect(bookingLink).toHaveClass('hide');
+  expect(confirmationLink).toHaveClass('hide');
+
+  
+  fireEvent.click(navIcon);
+
+
+  expect(bookingLink).not.toHaveClass('hide');
+  expect(confirmationLink).not.toHaveClass('hide');
+});
+
 });
